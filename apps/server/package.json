@@ -1,23 +1,32 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "types": "module",
-  "main": "index.js",
+  "description": "E-learning platform server",
+  "main": "src/server.ts",
   "private": true,
   "scripts": {
-    "dev": "tsx --watch src/server.ts --turbopack"
+    "dev": "tsx --watch src/server.ts --turbopack",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev"
   },
   "dependencies": {
+    "@fastify/cors": "^8.4.1",
+    "@fastify/jwt": "^7.2.1",
     "@prisma/client": "^6.8.2",
-    "fastify": "^5.3.3"
+    "bcryptjs": "^3.0.2",
+    "fastify": "^5.3.3",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
-    "@types/node": "^22.15.21",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^22.15.29",
     "eslint": "^9.27.0",
     "prisma": "^6.8.2",
     "tsx": "^4.19.4",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   }
 }
