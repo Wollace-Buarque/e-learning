@@ -13,3 +13,155 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  name          String
+  password      String
+  role          UserRole  @default(STUDENT)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  courses       Course[]  @relation("CourseInstructor")
+  enrollments   Enrollment[]
+  submissions   Submission[]
+  comments      Comment[]
+}
+
+model Course {
+  id            String    @id @default(uuid())
+  title         String
+  description   String
+  instructorId  String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  instructor    User      @relation("CourseInstructor", fields: [instructorId], references: [id])
+  modules       Module[]
+  enrollments   Enrollment[]
+}
+
+model Module {
+  id            String    @id @default(uuid())
+  title         String
+  description   String
+  courseId      String
+  order         Int
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  course        Course    @relation(fields: [courseId], references: [id])
+  lessons       Lesson[]
+}
+
+model Lesson {
+  id            String    @id @default(uuid())
+  title         String
+  content       String
+  moduleId      String
+  order         Int
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  module        Module    @relation(fields: [moduleId], references: [id])
+  materials     Material[]
+  comments      Comment[]
+  assessments   Assessment[]
+}
+
+model Material {
+  id            String    @id @default(uuid())
+  title         String
+  type          MaterialType
+  url           String
+  lessonId      String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  lesson        Lesson    @relation(fields: [lessonId], references: [id])
+}
+
+model Enrollment {
+  id            String    @id @default(uuid())
+  userId        String
+  courseId      String
+  status        EnrollmentStatus @default(IN_PROGRESS)
+  progress      Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user          User      @relation(fields: [userId], references: [id])
+  course        Course    @relation(fields: [courseId], references: [id])
+}
+
+model Assessment {
+  id            String    @id @default(uuid())
+  title         String
+  description   String
+  lessonId      String
+  questions     Question[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  lesson        Lesson    @relation(fields: [lessonId], references: [id])
+  submissions   Submission[]
+}
+
+model Question {
+  id            String    @id @default(uuid())
+  text          String
+  options       String[]
+  correctAnswer Int
+  assessmentId  String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  assessment    Assessment @relation(fields: [assessmentId], references: [id])
+}
+
+model Submission {
+  id            String    @id @default(uuid())
+  userId        String
+  assessmentId  String
+  answers       Int[]
+  score         Float?
+  feedback      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user          User      @relation(fields: [userId], references: [id])
+  assessment    Assessment @relation(fields: [assessmentId], references: [id])
+}
+
+model Comment {
+  id            String    @id @default(uuid())
+  content       String
+  userId        String
+  lessonId      String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user          User      @relation(fields: [userId], references: [id])
+  lesson        Lesson    @relation(fields: [lessonId], references: [id])
+}
+
+enum UserRole {
+  ADMIN
+  INSTRUCTOR
+  STUDENT
+}
+
+enum MaterialType {
+  VIDEO
+  DOCUMENT
+  LINK
+  IMAGE
+}
+
+enum EnrollmentStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}

@@ -22,3 +22,7 @@ Projeto de facultativo, desenvolvimento de uma plataforma de E-learning.
 - NodeJS
 - Fastify
 - Prisma
+
+## Rodando o projeto
+
+- Atualmente só existe o backend, para executa-lo, acesse esta [documentação](./apps/server/README.md).
