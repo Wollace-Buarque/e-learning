@@ -59,12 +59,6 @@ Modo de desenvolvimento:
 npm run dev
 ```
 
-Modo de produção:
-```bash
-npm run build
-npm start
-```
-
 ## Endpoints
 
 ### Autenticação
