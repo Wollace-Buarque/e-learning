@@ -50,7 +50,7 @@ Este é o backend para a plataforma de E-Learning, construdia com Fastify, TypeS
    ```bash
    npm run prisma:seed
    ```
-8. Coleção do Postman: Para facilitar o testes de endpoints por terceiros, foi criado um coleção no [Postman](https://www.postman.com/downloads/), para utiliza-la, pegue o arquivo [E-Learning API.postman_collection.json](./E-Learning%20API.postman_collection.json) e importe no Postman.
+8. Coleção do Postman: Para facilitar o testes de endpoints por terceiros, foi criado um coleção no [Postman](https://www.postman.com/downloads/), para usá-la, pegue o arquivo [E-Learning API.postman_collection.json](./E-Learning%20API.postman_collection.json) e importe no Postman.
 
 ## Executando servidor
 
