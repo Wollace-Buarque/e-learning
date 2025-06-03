@@ -1,0 +1,18 @@
+networks:
+  app-tier:
+    driver: bridge
+
+services:
+  postgres:
+    image: 'bitnami/postgresql:latest'
+    environment:
+      - POSTGRESQL_USERNAME=elearning
+      - POSTGRESQL_PASSWORD=elearning
+      - POSTGRESQL_DATABASE=development
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/bitnami/postgresql
+
+volumes:
+  postgres_data:
