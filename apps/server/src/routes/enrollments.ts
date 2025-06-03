@@ -1,9 +1,11 @@
 import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 import { prisma } from '../lib/prisma'
+import { authMiddleware } from '../middleware/auth'
 
 export async function enrollmentRoutes(app: FastifyInstance) {
-  app.post('/', async (request, reply) => {
+  // Enroll in course - authenticated users
+  app.post('/', { onRequest: [authMiddleware] }, async (request, reply) => {
     const { courseId } = z.object({
       courseId: z.string()
     }).parse(request.body)
@@ -40,7 +42,8 @@ export async function enrollmentRoutes(app: FastifyInstance) {
     return enrollment
   })
 
-  app.get('/my-enrollments', async (request) => {
+  // Get my enrollments - authenticated users
+  app.get('/my-enrollments', { onRequest: [authMiddleware] }, async (request) => {
     const userId = request.user.id
 
     const enrollments = await prisma.enrollment.findMany({
@@ -63,7 +66,7 @@ export async function enrollmentRoutes(app: FastifyInstance) {
     return enrollments
   })
 
-  app.put('/:id/progress', async (request, reply) => {
+  app.put('/:id/progress', { onRequest: [authMiddleware] }, async (request, reply) => {
     const { id } = request.params as { id: string }
     const { progress } = z.object({
       progress: z.number().min(0).max(100)
@@ -93,7 +96,7 @@ export async function enrollmentRoutes(app: FastifyInstance) {
     return updatedEnrollment
   })
 
-  app.delete('/:id', async (request, reply) => {
+  app.delete('/:id', { onRequest: [authMiddleware] }, async (request, reply) => {
     const { id } = request.params as { id: string }
     const userId = request.user.id
 

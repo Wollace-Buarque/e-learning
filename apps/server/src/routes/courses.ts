@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 import { prisma } from '../lib/prisma'
+import { authMiddleware, instructorMiddleware } from '../middleware/auth'
 
 const createCourseSchema = z.object({
   title: z.string(),
@@ -13,7 +14,7 @@ const updateCourseSchema = z.object({
 })
 
 export async function courseRoutes(app: FastifyInstance) {
-  app.post('/', async (request, reply) => {
+  app.post('/', { onRequest: [authMiddleware, instructorMiddleware] }, async (request, reply) => {
     const { title, description } = createCourseSchema.parse(request.body)
     const userId = request.user.id
 
@@ -82,7 +83,7 @@ export async function courseRoutes(app: FastifyInstance) {
     return course
   })
 
-  app.put('/:id', async (request, reply) => {
+  app.put('/:id', { onRequest: [authMiddleware, instructorMiddleware] }, async (request, reply) => {
     const { id } = request.params as { id: string }
     const data = updateCourseSchema.parse(request.body)
     const userId = request.user.id
@@ -107,7 +108,7 @@ export async function courseRoutes(app: FastifyInstance) {
     return updatedCourse
   })
 
-  app.delete('/:id', async (request, reply) => {
+  app.delete('/:id', { onRequest: [authMiddleware, instructorMiddleware] }, async (request, reply) => {
     const { id } = request.params as { id: string }
     const userId = request.user.id
 
@@ -130,7 +131,7 @@ export async function courseRoutes(app: FastifyInstance) {
     return { message: 'Course deleted successfully' }
   })
 
-  app.post('/:courseId/modules', async (request, reply) => {
+  app.post('/:courseId/modules', { onRequest: [authMiddleware, instructorMiddleware] }, async (request, reply) => {
     const { courseId } = request.params as { courseId: string }
     const { title, description, order } = z.object({
       title: z.string(),
@@ -163,7 +164,7 @@ export async function courseRoutes(app: FastifyInstance) {
     return module
   })
 
-  app.post('/:courseId/modules/:moduleId/lessons', async (request, reply) => {
+  app.post('/:courseId/modules/:moduleId/lessons', { onRequest: [authMiddleware, instructorMiddleware] }, async (request, reply) => {
     const { courseId, moduleId } = request.params as { courseId: string, moduleId: string }
     const { title, content, order } = z.object({
       title: z.string(),

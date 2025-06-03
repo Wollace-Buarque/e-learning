@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 import { prisma } from '../lib/prisma'
+import { authMiddleware } from '../middleware/auth'
 
 const createCommentSchema = z.object({
   content: z.string(),
@@ -12,7 +13,7 @@ const updateCommentSchema = z.object({
 })
 
 export async function commentRoutes(app: FastifyInstance) {
-  app.post('/', async (request, reply) => {
+  app.post('/', { onRequest: [authMiddleware] }, async (request, reply) => {
     const { content, lessonId } = createCommentSchema.parse(request.body)
     const userId = request.user.id
 
@@ -44,7 +45,7 @@ export async function commentRoutes(app: FastifyInstance) {
     return comment
   })
 
-  app.get('/lesson/:lessonId', async (request, reply) => {
+  app.get('/lesson/:lessonId', { onRequest: [authMiddleware] }, async (request, reply) => {
     const { lessonId } = request.params as { lessonId: string }
 
     const lesson = await prisma.lesson.findUnique({
@@ -74,7 +75,7 @@ export async function commentRoutes(app: FastifyInstance) {
     return comments
   })
 
-  app.put('/:id', async (request, reply) => {
+  app.put('/:id', { onRequest: [authMiddleware] }, async (request, reply) => {
     const { id } = request.params as { id: string }
     const { content } = updateCommentSchema.parse(request.body)
     const userId = request.user.id
@@ -108,7 +109,7 @@ export async function commentRoutes(app: FastifyInstance) {
     return updatedComment
   })
 
-  app.delete('/:id', async (request, reply) => {
+  app.delete('/:id', { onRequest: [authMiddleware] }, async (request, reply) => {
     const { id } = request.params as { id: string }
     const userId = request.user.id
 

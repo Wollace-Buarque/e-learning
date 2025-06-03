@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 import { prisma } from '../lib/prisma'
+import { authMiddleware, instructorMiddleware } from '../middleware/auth'
 
 const createAssessmentSchema = z.object({
   title: z.string(),
@@ -18,7 +19,7 @@ const submitAssessmentSchema = z.object({
 })
 
 export async function assessmentRoutes(app: FastifyInstance) {
-  app.post('/', async (request, reply) => {
+  app.post('/', { onRequest: [authMiddleware, instructorMiddleware] }, async (request, reply) => {
     const data = createAssessmentSchema.parse(request.body)
     const userId = request.user.id
 
@@ -58,7 +59,7 @@ export async function assessmentRoutes(app: FastifyInstance) {
     return assessment
   })
 
-  app.get('/:id', async (request, reply) => {
+  app.get('/:id', { onRequest: [authMiddleware] }, async (request, reply) => {
     const { id } = request.params as { id: string }
     const userId = request.user.id
 
@@ -98,7 +99,7 @@ export async function assessmentRoutes(app: FastifyInstance) {
     return assessment
   })
 
-  app.post('/:id/submit', async (request, reply) => {
+  app.post('/:id/submit', { onRequest: [authMiddleware] }, async (request, reply) => {
     const { id } = request.params as { id: string }
     const { answers } = submitAssessmentSchema.parse(request.body)
     const userId = request.user.id
@@ -139,7 +140,7 @@ export async function assessmentRoutes(app: FastifyInstance) {
     return submission
   })
 
-  app.get('/my-submissions', async (request) => {
+  app.get('/my-submissions', { onRequest: [authMiddleware] }, async (request) => {
     const userId = request.user.id
 
     const submissions = await prisma.submission.findMany({
@@ -164,7 +165,7 @@ export async function assessmentRoutes(app: FastifyInstance) {
     return submissions
   })
 
-  app.put('/submissions/:id/feedback', async (request, reply) => {
+  app.put('/submissions/:id/feedback', { onRequest: [authMiddleware, instructorMiddleware] }, async (request, reply) => {
     const { id } = request.params as { id: string }
     const { feedback } = z.object({
       feedback: z.string()
