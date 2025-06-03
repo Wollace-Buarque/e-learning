@@ -46,6 +46,10 @@ Este é o backend para a plataforma de E-Learning, construdia com Fastify, TypeS
    ```bash
    npm run prisma:generate
    ```
+7. Gere o seed para ter um usuário como ADMIN e INSTRUTOR:
+   ```bash
+   npm run prisma:seed
+   ```
 
 ## Executando servidor
 
