@@ -8,37 +8,42 @@ import { enrollmentRoutes } from './routes/enrollments'
 import { assessmentRoutes } from './routes/assessments'
 import { commentRoutes } from './routes/comments'
 
-const app = Fastify({
-  logger: true
-})
+export async function buildApp() {
+  const app = Fastify({
+    logger: true
+  })
 
-// Plugins
-app.register(cors, {
-  origin: true
-})
+  // Plugins
+  await app.register(cors, {
+    origin: true
+  })
 
-app.register(jwt, {
-  secret: process.env.JWT_SECRET || 'your-super-secret-key-here'
-})
+  await app.register(jwt, {
+    secret: process.env.JWT_SECRET || 'your-super-secret-key-here'
+  })
 
-// Rotas
-app.register(authRoutes, { prefix: '/auth' })
-app.register(courseRoutes, { prefix: '/courses' })
-app.register(enrollmentRoutes, { prefix: '/enrollments' })
-app.register(assessmentRoutes, { prefix: '/assessments' })
-app.register(commentRoutes, { prefix: '/comments' })
+  // Rotas
+  app.register(authRoutes, { prefix: '/auth' })
+  app.register(courseRoutes, { prefix: '/courses' })
+  app.register(enrollmentRoutes, { prefix: '/enrollments' })
+  app.register(assessmentRoutes, { prefix: '/assessments' })
+  app.register(commentRoutes, { prefix: '/comments' })
 
-// Status da aplicação
-app.get('/health', async () => {
-  return { status: 'ok' }
-})
+  // Status da aplicação
+  app.get('/health', async () => {
+    return { status: 'ok' }
+  })
+
+  return app
+}
 
 const start = async () => {
   try {
+    const app = await buildApp()
     await app.listen({ port: 3001, host: '0.0.0.0' })
     console.log('Server is running on http://localhost:3001')
   } catch (err) {
-    app.log.error(err)
+    console.error(err)
     process.exit(1)
   }
 }
